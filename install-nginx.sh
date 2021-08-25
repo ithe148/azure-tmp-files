@@ -8,3 +8,7 @@ systemctl enable --now nginx && echo "enable and run nginx" >> /var/log/azure/in
 
 
 exit 0 
+
+
+
+
