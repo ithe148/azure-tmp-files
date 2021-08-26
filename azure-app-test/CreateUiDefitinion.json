@@ -1,0 +1,85 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/0.1.2-preview/CreateUIDefinition.MultiVm.json#",
+    "handler": "Microsoft.Azure.CreateUIDef",
+    "version": "0.1.2-preview",
+    "parameters": {
+        "basics": [
+            {}
+        ],
+        "steps": [
+            {
+                "name": "vkCoreSettings",
+                "label": "VoiceKey Core server settings",
+                "elements": [
+                    {
+                        "name": "vmCoreName",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "VM Core Name",
+                        "defaultValue": "vkcore"
+                    },
+                    {
+                        "name": "adminUsername",
+                        "type": "Microsoft.Compute.UserNameTextBox",
+                        "label": "OS user",
+                        "defaultValue": "vkadmin",
+                        "toolTip": "",
+                        "constraints": {
+							"required": true
+						},
+						"osPlatform": "Linux",
+						"visible": true
+					},
+					{
+						"name": "Auth",
+						"type": "Microsoft.Compute.CredentialsCombo",
+						"label": {
+							"authenticationType": "Authentication type",
+							"password": "Password",
+							"confirmPassword": "Confirm password",
+							"sshPublicKey": "SSH public key"
+						},
+						"toolTip": {
+							"authenticationType": "",
+							"password": "",
+							"sshPublicKey": ""
+						},
+						"constraints": {
+							"required": true,
+							"customPasswordRegex": "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,}$",
+							"customValidationMessage": "The password must be alphanumeric, contain at least 12 characters, and have at least 1 letter and 1 number."
+						},
+						"options": {
+							"hideConfirmation": false,
+							"hidePassword": false
+						},
+						"osPlatform": "Linux",
+						"visible": true
+					}
+                ]
+            },			
+            {
+                "name": "tags",
+                "label": "Tags",
+                "elements": [
+                    {
+                        "name": "tagsByResource",
+                        "type": "Microsoft.Common.TagsByResource",
+                        "resources": [
+                            "Microsoft.Compute/virtualMachines"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "outputs": {
+            "vmName": "[steps('vkCoreSettings').vmCoreName]",
+            "adminUsername": "[steps('vkCoreSettings').adminUsername]",
+            "authenticationType": "[steps('vkCoreSettings').Auth.authenticationType]",
+            "adminPasswordOrKey": "[if(equals(steps('vkCoreSettings').Auth.authenticationType, 'password'), steps('vkCoreSettings').Auth.password, steps('vkCoreSettings').Auth.sshPublicKey)]", 
+            "storageAccountNamePrefix": "[steps('storageConfig').storageAccounts.prefix]",
+            "storageAccountType": "[steps('storageConfig').storageAccounts.type]",
+            "location": "[location()]",
+            "tagsByResource": "[steps('tags').tagsByResource]"
+        }
+    }
+}
