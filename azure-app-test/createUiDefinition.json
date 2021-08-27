@@ -56,19 +56,6 @@
 						"visible": true
 					}
                 ]
-            },			
-            {
-                "name": "tags",
-                "label": "Tags",
-                "elements": [
-                    {
-                        "name": "tagsByResource",
-                        "type": "Microsoft.Common.TagsByResource",
-                        "resources": [
-                            "Microsoft.Compute/virtualMachines"
-                        ]
-                    }
-                ]
             }
         ],
         "outputs": {
@@ -78,8 +65,7 @@
             "adminPasswordOrKey": "[if(equals(steps('vkCoreSettings').Auth.authenticationType, 'password'), steps('vkCoreSettings').Auth.password, steps('vkCoreSettings').Auth.sshPublicKey)]", 
             "storageAccountNamePrefix": "[steps('storageConfig').storageAccounts.prefix]",
             "storageAccountType": "[steps('storageConfig').storageAccounts.type]",
-            "location": "[location()]",
-            "tagsByResource": "[steps('tags').tagsByResource]"
+            "location": "[location()]"
         }
     }
 }
