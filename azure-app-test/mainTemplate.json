@@ -210,10 +210,7 @@
                         }
                     },
                     "imageReference": {
-                        "publisher": "OpenLogic",
-                        "offer": "CentOS-LVM",
-                        "sku": "[parameters('centOSVersion')]",
-                        "version": "latest"
+                        "id": "/subscriptions/57b781bd-27d3-45ed-bea7-6e32c1d53f67/resourceGroups/packerGroup/providers/Microsoft.Compute/images/CentOS7VK"
                     }
                 },
                 "networkProfile": {
