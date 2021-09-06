@@ -37,9 +37,6 @@
         "centOSVersion": {
             "type": "string",
             "defaultValue": "7-lvm-gen2",
-            "allowedValues": [
-                "7-lvm-gen1",
-                "7-lvm-gen2"
             ]
         },
         "location": {
@@ -51,9 +48,9 @@
         },
         "vmSize": {
             "type": "string",
-            "defaultValue": "Standard_E8ds_v4",
+            "defaultValue": "Standard_F32s_v2",
             "allowedValues": [
-                "Standard_E8ds_v4"
+                "Standard_F32s_v2"
             ],
             "metadata": {
                 "description": "The size of the VM"
