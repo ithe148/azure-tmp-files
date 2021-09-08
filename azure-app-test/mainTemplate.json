@@ -66,8 +66,8 @@
         "networkSecurityGroupName": "VoiceKeySecGroupNet",
         "networkInterfaceName": "[format('{0}NetInt', parameters('vmName'))]",
         "osDiskType": "Standard_LRS",
-        "subnetAddressPrefix": "10.1.0.0/24",
-        "addressPrefix": "10.1.0.0/16",
+        "subnetAddressPrefix": "10.0.0.0/24",
+        "addressPrefix": "10.0.0.0/16",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -91,10 +91,11 @@
                     {
                         "name": "ipconfig1",
                         "properties": {
+                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAllocationMethod": "Static",                            
                             "subnet": {
                                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
                             },
-                            "privateIPAllocationMethod": "Dynamic",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
                             }
