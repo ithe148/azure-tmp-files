@@ -9,6 +9,34 @@
                 "description": "The name of you Virtual Machine."
             }
         },
+        "SharedImageGalleryResourceGroup": {
+            "type": "string",
+            "defaultValue": "packerGroup",
+            "metadata": {
+                "description": "The name of ResourceGroup with SharedImageGallery."
+            }            
+        },
+        "SharedImageGalleryName": {
+            "type": "string",
+            "defaultValue": "VKImageGalery",
+            "metadata": {
+                "description": "The name of SharedImageGallery."
+            }            
+        },    
+        "SharedImageGalleryDefinitionName": {
+            "type": "string",
+            "defaultValue": "CentOS7VK4.5.1release",
+            "metadata": {
+                "description": "The name of Definition with SharedImageGallery."
+            }            
+        }, 
+        "SharedImageGalleryVersionName": {
+            "type": "string",
+            "defaultValue": "4.5.1",
+            "metadata": {
+                "description": "The name of ImageVersion."
+            }            
+        },                    
         "adminUsername": {
             "type": "string",
             "defaultValue": "vkuser",
@@ -203,7 +231,7 @@
                         }
                     },
                     "imageReference": {
-                        "id": "/subscriptions/57b781bd-27d3-45ed-bea7-6e32c1d53f67/resourceGroups/packerGroup/providers/Microsoft.Compute/galleries/VKImageGalery/images/CentOS7VK4.5.1release"
+                        "id": "[resourceId(parameters('SharedImageGalleryResourceGroup'),'Microsoft.Compute/galleries/images/versions',parameters('SharedImageGalleryName'), parameters('SharedImageGalleryDefinitionName'), parameters('SharedImageGalleryVersionName') )]"
                     }
                 },
                 "networkProfile": {
