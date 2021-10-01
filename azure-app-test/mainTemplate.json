@@ -226,12 +226,9 @@
                 "storageProfile": {
                     "osDisk": {
                         "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[variables('osDiskType')]"
+                        "image":{
+                            "uri": "https://vkstorageimages.blob.core.windows.net/system/Microsoft.Compute/Images/vhds/packer-osDisk.fea23280-401b-448b-ab76-4b01408e336c.vhd?sv=2020-08-04&ss=bqtf&srt=sco&sp=rwdlacuptfxi&se=2021-10-01T21:58:53Z&sig=776F%2FZRzuN2aXFYk2Iq1XUOyILY8Yesgart%2B101m2So%3D&_=1633101030741"
                         }
-                    },
-                    "imageReference": {
-                        "id": "[resourceId(parameters('SharedImageGalleryResourceGroup'),'Microsoft.Compute/galleries/images/versions',parameters('SharedImageGalleryName'), parameters('SharedImageGalleryDefinitionName'), parameters('SharedImageGalleryVersionName') )]"
                     }
                 },
                 "networkProfile": {
