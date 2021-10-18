@@ -57,7 +57,7 @@
         },
         "adminPasswordOrKey": {
             "type": "secureString",
-            "defaultValue": "123456Assssss",
+            "defaultValue": "",
             "metadata": {
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
@@ -231,7 +231,7 @@
                         }
                     },
                     "imageReference": {
-                        "id": "/subscriptions/57b781bd-27d3-45ed-bea7-6e32c1d53f67/resourceGroups/packerGroup/providers/Microsoft.Compute/galleries/VKImageGalery/images/CentOS7VK4.5.1release/versions/4.5.5"
+                        "id": "/subscriptions/57b781bd-27d3-45ed-bea7-6e32c1d53f67/resourceGroups/packerGroup/providers/Microsoft.Compute/images/CentOS7VK4.5.13release"
                     }
                 },
                 "networkProfile": {
