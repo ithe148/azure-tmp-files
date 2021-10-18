@@ -14,15 +14,15 @@
                     {
                         "name": "vmCoreName",
                         "type": "Microsoft.Common.TextBox",
-                        "label": "VM Core Name",
+                        "label": "VM Core Server Name",
                         "defaultValue": "vkcore"
                     },
                     {
-                        "name": "adminUsername",
+                        "name": "adminOSUsername",
                         "type": "Microsoft.Compute.UserNameTextBox",
-                        "label": "OS user",
-                        "defaultValue": "vkadmin",
-                        "toolTip": "",
+                        "label": "OS Username",
+                        "defaultValue": "vkosadmin",
+                        "toolTip": "Please provide Username OS ssh-user.",
                         "constraints": {
 							"required": true
 						},
@@ -33,14 +33,14 @@
 						"name": "Auth",
 						"type": "Microsoft.Compute.CredentialsCombo",
 						"label": {
-							"authenticationType": "Authentication type",
-							"password": "Password",
+							"authenticationType": "OS User Authentication type",
+							"password": "OS User Password",
 							"confirmPassword": "Confirm password",
 							"sshPublicKey": "SSH public key"
 						},
 						"toolTip": {
-							"authenticationType": "",
-							"password": "",
+							"authenticationType": "Select the type of authorization",
+							"password": "The password must be alphanumeric, contain at least 12 characters, and have at least 1 letter and 1 number",
 							"sshPublicKey": ""
 						},
 						"constraints": {
@@ -54,15 +54,46 @@
 						},
 						"osPlatform": "Linux",
 						"visible": true
-					}
+					},
+					{
+                        "name": "adminVKUsername",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "VK Username",
+						"toolTip": "Please provide Username VoiceKey Administrator.",
+                        "defaultValue": "vkadmin",
+                        "constraints": {
+							"required": true
+						},
+						"visible": true
+					},
+					{
+                        "name": "adminVKPassword",
+                        "type": "Microsoft.Common.PasswordBox",
+                        "label": {
+							"password": "VK User Password",
+                        	"confirmPassword": "Confirm password"
+                        },						
+						"toolTip": "Please provide Password VoiceKey Administrator.",
+                        "constraints": {
+							"required": true,
+                    		"regex": "^[a-zA-Z0-9]{8,}$",
+                    		"validationMessage": "Password must be at least 8 characters long, contain only numbers and letters"							
+						},
+		                "options": {
+                    		"hideConfirmation": false
+                		},						
+						"visible": true
+					}					
                 ]
             }
         ],
         "outputs": {
             "vmName": "[steps('vkCoreSettings').vmCoreName]",
-            "adminUsername": "[steps('vkCoreSettings').adminUsername]",
-            "authenticationType": "[steps('vkCoreSettings').Auth.authenticationType]",
+            "adminUsername": "[steps('vkCoreSettings').adminOSUsername]",
             "adminPasswordOrKey": "[if(equals(steps('vkCoreSettings').Auth.authenticationType, 'password'), steps('vkCoreSettings').Auth.password, steps('vkCoreSettings').Auth.sshPublicKey)]", 
+			"adminVKUsername": "[steps('vkCoreSettings').adminVKUsername]",
+			"adminVKPassword": "[steps('vkCoreSettings').adminVKPassword.password]",
+            "authenticationType": "[steps('vkCoreSettings').Auth.authenticationType]",
             "storageAccountNamePrefix": "[steps('storageConfig').storageAccounts.prefix]",
             "storageAccountType": "[steps('storageConfig').storageAccounts.type]",
             "location": "[location()]"
