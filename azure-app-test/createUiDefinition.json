@@ -56,6 +56,17 @@
 						"visible": true
 					},
 					{
+                        "name": "adminVKDomain",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "VK Domain",
+						"toolTip": "Please provide Domain VoiceKey Administrator.",
+                        "defaultValue": "vkadmindomain",
+                        "constraints": {
+							"required": true
+						},
+						"visible": true
+					},
+					{
                         "name": "adminVKUsername",
                         "type": "Microsoft.Common.TextBox",
                         "label": "VK Username",
@@ -91,6 +102,7 @@
             "vmName": "[steps('vkCoreSettings').vmCoreName]",
             "adminUsername": "[steps('vkCoreSettings').adminOSUsername]",
             "adminPasswordOrKey": "[if(equals(steps('vkCoreSettings').Auth.authenticationType, 'password'), steps('vkCoreSettings').Auth.password, steps('vkCoreSettings').Auth.sshPublicKey)]", 
+			"adminVKDomain": "[steps('vkCoreSettings').adminVKDomain]",
 			"adminVKUsername": "[steps('vkCoreSettings').adminVKUsername]",
 			"adminVKPassword": "[steps('vkCoreSettings').adminVKPassword.password]",
             "authenticationType": "[steps('vkCoreSettings').Auth.authenticationType]",

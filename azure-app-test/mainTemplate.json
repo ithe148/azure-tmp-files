@@ -8,35 +8,7 @@
             "metadata": {
                 "description": "The name of you Virtual Machine."
             }
-        },
-        "SharedImageGalleryResourceGroup": {
-            "type": "string",
-            "defaultValue": "packerGroup",
-            "metadata": {
-                "description": "The name of ResourceGroup with SharedImageGallery."
-            }            
-        },
-        "SharedImageGalleryName": {
-            "type": "string",
-            "defaultValue": "VKImageGalery",
-            "metadata": {
-                "description": "The name of SharedImageGallery."
-            }            
-        },    
-        "SharedImageGalleryDefinitionName": {
-            "type": "string",
-            "defaultValue": "CentOS7VK4.5.1release",
-            "metadata": {
-                "description": "The name of Definition with SharedImageGallery."
-            }            
-        }, 
-        "SharedImageGalleryVersionName": {
-            "type": "string",
-            "defaultValue": "4.5.1",
-            "metadata": {
-                "description": "The name of ImageVersion."
-            }            
-        },                    
+        },                   
         "adminUsername": {
             "type": "string",
             "defaultValue": "vkuser",
@@ -62,6 +34,26 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
         },
+        "adminVKDomain": {
+            "type": "string",
+            "defaultValue": "vkadmindomain",
+            "metadata": {
+                "description": "Domain VoiceKey Administrator."
+            }
+        },
+        "adminVKUsername": {
+            "type": "string",
+            "defaultValue": "vkadmin",
+            "metadata": {
+                "description": "Username VoiceKey Administrator."
+            }
+        },        
+        "adminVKPassword": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Password VoiceKey Administrator."
+            }
+        },        
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -254,7 +246,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('vmName'),'/nginx-install')]",
+            "name": "[concat(parameters('vmName'),'/create_vk_user')]",
             "location": "[parameters('location')]",
             "apiVersion": "2020-12-01",
             "dependsOn": [
@@ -264,24 +256,13 @@
                 "publisher": "Microsoft.OSTCExtensions",
                 "type": "CustomScriptForLinux",
                 "typeHandlerVersion": "1.4",
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/ithe148/azure-tmp-files/main/install-nginx.sh"
-                    ],
-                    "commandToExecute": "sh install-nginx.sh"
+                "settings": {                   
+                    "commandToExecute": "[concat('create_vk_user_curl ',parameters('adminVKDomain'),' ',parameters('adminVKUsername'),' ',parameters('adminVKPassword'),' && sudo rm -rf /bin/create_vk_user_curl')]"
                 }
             }
         }
     ],
     "outputs": {
-        "adminUsername": {
-            "type": "string",
-            "value": "[parameters('adminUsername')]"
-        },
-        "adminPassword": {
-            "type": "string",
-            "value": "[parameters('adminPasswordOrKey')]"
-        },
         "hostname": {
             "type": "string",
             "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).dnsSettings.fqdn]"
