@@ -74,8 +74,9 @@
     },
     "functions": [],
     "variables": {
+        "subscriptionId": "[subscription().subscriptionId]",
         "publicIPAddressName": "[format('{0}PublicIP', parameters('vmName'))]",
-        "dnsLabelPrefix": "[toLower(format('vkcore-{0}', uniquestring(resourceGroup().name)))]",
+        "dnsLabelPrefix": "[toLower(format('vkcore-{0}-{1}', uniquestring(subscription().subscriptionId), variables('subscriptionId')))]",
         "virtualNetworkName": "VoiceKeyNetwork",
         "subnetName": "VoiceKeyNetworkSubnet",
         "networkSecurityGroupName": "VoiceKeySecGroupNet",
