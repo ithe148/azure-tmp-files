@@ -87,8 +87,8 @@
 						"toolTip": "Please provide Password VoiceKey Administrator.",
                         "constraints": {
 							"required": true,
-                    		"regex": "^[a-zA-Z0-9]{8,}$",
-                    		"validationMessage": "Password must be at least 8 characters long, contain only numbers and letters"							
+                    		"regex": "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
+                    		"validationMessage": "The password must be at least 8 characters long, contain at least 1 number, 1 special character and 1 capital letter."							
 						},
 		                "options": {
                     		"hideConfirmation": false
