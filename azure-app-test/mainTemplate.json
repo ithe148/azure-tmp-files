@@ -3,80 +3,114 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vmName": {
-            "type": "string",
-            "defaultValue": "vkcore",
+            "defaultValue": "vmvkcore",
+            "type": "String",
             "metadata": {
                 "description": "The name of you Virtual Machine."
             }
-        },                   
+        },
         "adminUsername": {
-            "type": "string",
             "defaultValue": "vkuser",
+            "type": "String",
             "metadata": {
                 "description": "Username for the Virtual Machine."
             }
         },
         "authenticationType": {
-            "type": "string",
             "defaultValue": "sshPublicKey",
             "allowedValues": [
                 "sshPublicKey",
                 "password"
             ],
+            "type": "String",
             "metadata": {
                 "description": "Type of authentication to use on the Virtual Machine. SSH key is recommended."
             }
         },
         "adminPasswordOrKey": {
-            "type": "secureString",
             "defaultValue": "",
+            "type": "SecureString",
             "metadata": {
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
         },
         "adminVKDomain": {
-            "type": "string",
             "defaultValue": "vkadmindomain",
+            "type": "String",
             "metadata": {
                 "description": "Domain VoiceKey Administrator."
             }
         },
         "adminVKUsername": {
-            "type": "string",
             "defaultValue": "vkadmin",
+            "type": "String",
             "metadata": {
                 "description": "Username VoiceKey Administrator."
             }
-        },        
+        },
         "adminVKPassword": {
-            "type": "secureString",
+            "type": "SecureString",
             "metadata": {
                 "description": "Password VoiceKey Administrator."
             }
-        },        
+        },
         "location": {
-            "type": "string",
             "defaultValue": "[resourceGroup().location]",
+            "type": "String",
             "metadata": {
                 "description": "Location for all resources."
             }
         },
-        "vmSize": {
-            "type": "string",
-            "defaultValue": "Standard_F32s_v2",
+        "SolutionSize": {
+            "defaultValue": "Low",
             "allowedValues": [
-                "Standard_F32s_v2"
+                "Low",
+                "Medium",
+                "High"
             ],
+            "type": "String",
+            "metadata": {
+                "description": "The size of the Solution"
+            }
+        },
+        "vmSizeLow": {
+            "defaultValue": "Standard_F4s_v2",
+            "allowedValues": [
+                "Standard_F4s_v2"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "The size of the VM"
+            }
+        },
+        "vmSizeMedium": {
+            "defaultValue": "Standard_F8s_v2",
+            "allowedValues": [
+                "Standard_F8s_v2"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "The size of the VM"
+            }
+        },
+        "vmSizeHigh": {
+            "defaultValue": "Standard_F16s_v2",
+            "allowedValues": [
+                "Standard_F16s_v2"
+            ],
+            "type": "String",
             "metadata": {
                 "description": "The size of the VM"
             }
         }
     },
-    "functions": [],
     "variables": {
         "subscriptionId": "[subscription().subscriptionId]",
+        "SolutionSize": "[parameters('SolutionSize')]",
         "publicIPAddressName": "[format('{0}PublicIP', parameters('vmName'))]",
         "dnsLabelPrefix": "[toLower(format('vkcore-{0}-{1}', uniquestring(subscription().subscriptionId), variables('subscriptionId')))]",
+        "vmName": "[toLower(format('{0}-{1}', parameters('vmName'), variables('SolutionSize')))]",
+        "serviceName": "VK_VoiceGridProcessor",
         "virtualNetworkName": "VoiceKeyNetwork",
         "subnetName": "VoiceKeyNetworkSubnet",
         "networkSecurityGroupName": "VoiceKeySecGroupNet",
@@ -84,31 +118,38 @@
         "osDiskType": "Standard_LRS",
         "subnetAddressPrefix": "10.0.0.0/24",
         "addressPrefix": "10.0.0.0/16",
+        "adminSSHKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC02pIyAg8Eq1hC8V3L9humRfdZMOGXkwOLrR82yBlT98VMTj2a0EJaFeP+vZXJY+ksTTDxc62JW3708G5aJ3n+PUh8Fc+0ZwPrJ7boAC5RB1pi6gFmJg5ZrcUfhuISJib9kIhMW8DiFeNTN1Wl3dSEVkX7xjCfOwzjkgJWWlJPU/UpFD1ICd6Pm3n7TyvZ06+HWOvlWoIgiCU2s8dtunBRSbQCrkEvhSi5HeqQTsHISjDpXEWJSpzcM2isJqfDoa/ubfoLSA8gOsi8eUyvcAb6eW9LUZgC1DmI2iIa2VuWiGx87e/Yt5cI9hkH98pqZnl/8sshoe1yvUxBR97cGlEI1loVmztPoSER+d2YDSrRjyltLV3ozSoE+NgqbunEchv1p3xGQTPvTI+gexq4pzzZe+/WQkXwXDKZVsPXtJCrzOF7viVy5m0qUMSRxyvmsQn0RD1h/a+aNAHReVUNe6HxaeBUy9FyFzTXMNVOYlFkciyt0SV2r0Qup2csEwSpDqE= generated-by-azure",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
                 "publicKeys": [
                     {
                         "path": "[format('/home/{0}/.ssh/authorized_keys', parameters('adminUsername'))]",
-                        "keyData": "[parameters('adminPasswordOrKey')]"
+                        "keyData": "[variables('adminSSHKey')]"
                     }
                 ]
             }
         }
     },
+    "functions": [],
     "resources": [
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2020-06-01",
             "name": "[variables('networkInterfaceName')]",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
+            ],
             "properties": {
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAddress": "10.0.0.4",
-                            "privateIPAllocationMethod": "Static",                            
+                            "privateIPAllocationMethod": "Static",
                             "subnet": {
                                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
                             },
@@ -121,12 +162,7 @@
                 "networkSecurityGroup": {
                     "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
                 }
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
-                "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
-            ]
+            }
         },
         {
             "type": "Microsoft.Network/networkSecurityGroups",
@@ -181,14 +217,14 @@
             "type": "Microsoft.Network/virtualNetworks/subnets",
             "apiVersion": "2020-06-01",
             "name": "[format('{0}/{1}', variables('virtualNetworkName'), variables('subnetName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            ],
             "properties": {
                 "addressPrefix": "[variables('subnetAddressPrefix')]",
                 "privateEndpointNetworkPolicies": "Enabled",
                 "privateLinkServiceNetworkPolicies": "Enabled"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
-            ]
+            }
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
@@ -210,11 +246,14 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2020-06-01",
-            "name": "[parameters('vmName')]",
+            "name": "[toLower(format('{0}-low', parameters('vmName')))]",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+            ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('vmSize')]"
+                    "vmSize": "[parameters('vmSizeLow')]"
                 },
                 "storageProfile": {
                     "osDisk": {
@@ -241,35 +280,128 @@
                     "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
                 }
             },
+            "condition": "[equals(parameters('SolutionSize'),'Low')]"
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "name": "[toLower(format('{0}-medium', parameters('vmName')))]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
-            ]
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSizeMedium')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "id": "/subscriptions/57b781bd-27d3-45ed-bea7-6e32c1d53f67/resourceGroups/packerGroup/providers/Microsoft.Compute/images/CentOS7VK4.5.13release"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPasswordOrKey')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
+                }
+            },
+            "condition": "[equals(parameters('SolutionSize'),'Medium')]"
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2020-06-01",
+            "name": "[toLower(format('{0}-high', parameters('vmName')))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSizeHigh')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "id": "/subscriptions/57b781bd-27d3-45ed-bea7-6e32c1d53f67/resourceGroups/packerGroup/providers/Microsoft.Compute/images/CentOS7VK4.5.13release"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPasswordOrKey')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
+                }
+            },
+            "condition": "[equals(parameters('SolutionSize'),'High')]"
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('vmName'),'/create_vk_user')]",
-            "location": "[parameters('location')]",
             "apiVersion": "2020-12-01",
+            "name": "[concat(variables('vmName'),'/create_vk_user')]",
+            "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+                "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
             ],
             "properties": {
                 "publisher": "Microsoft.OSTCExtensions",
                 "type": "CustomScriptForLinux",
                 "typeHandlerVersion": "1.4",
-                "settings": {                   
+                "settings": {
                     "commandToExecute": "[concat('create_vk_user_curl ',parameters('adminVKDomain'),' ',parameters('adminVKUsername'),' ',parameters('adminVKPassword'),' && sudo rm -rf /bin/create_vk_user_curl')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2020-12-01",
+            "name": "[concat(variables('vmName'),'/change_heap_size')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.OSTCExtensions",
+                "type": "CustomScriptForLinux",
+                "typeHandlerVersion": "1.4",
+                "settings": {
+                    "commandToExecute": "[concat('change_heap_size_vk_service ',variables('serviceName'),' ',variables('SolutionSize'),' && sudo rm -rf /bin/change_heap_size_vk_service')]"
                 }
             }
         }
     ],
     "outputs": {
         "hostname": {
-            "type": "string",
+            "type": "String",
             "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).dnsSettings.fqdn]"
         },
         "sshCommand": {
-            "type": "string",
+            "type": "String",
             "value": "[format('ssh {0}@{1}', parameters('adminUsername'), reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).dnsSettings.fqdn)]"
         }
     }
