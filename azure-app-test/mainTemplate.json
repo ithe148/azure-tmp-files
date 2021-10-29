@@ -61,6 +61,13 @@
                 "description": "Location for all resources."
             }
         },
+        "utcValue": {
+            "defaultValue": "[utcNow()]",
+            "type": "String",
+            "metadata": {
+                "description": "Current Date."
+            }
+        },
         "SolutionSize": {
             "defaultValue": "Low",
             "allowedValues": [
@@ -108,7 +115,7 @@
         "subscriptionId": "[subscription().subscriptionId]",
         "SolutionSize": "[parameters('SolutionSize')]",
         "publicIPAddressName": "[format('{0}PublicIP', parameters('vmName'))]",
-        "dnsLabelPrefix": "[toLower(format('vkcore-{0}-{1}', uniquestring(subscription().subscriptionId), variables('subscriptionId')))]",
+        "dnsLabelPrefix": "[toLower(format('vkcore-{0}-{1}', uniquestring(subscription().subscriptionId, parameters('utcValue')), variables('subscriptionId')))]",
         "vmName": "[toLower(format('{0}-{1}', parameters('vmName'), variables('SolutionSize')))]",
         "serviceName": "VK_VoiceGridProcessor",
         "virtualNetworkName": "VoiceKeyNetwork",
@@ -362,35 +369,18 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2020-12-01",
-            "name": "[concat(variables('vmName'),'/create_vk_user')]",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(variables('vmName'),'/runVKScript')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
             ],
             "properties": {
-                "publisher": "Microsoft.OSTCExtensions",
-                "type": "CustomScriptForLinux",
-                "typeHandlerVersion": "1.4",
-                "settings": {
-                    "commandToExecute": "[concat('create_vk_user_curl ',parameters('adminVKDomain'),' ',parameters('adminVKUsername'),' ',parameters('adminVKPassword'),' && sudo rm -rf /bin/create_vk_user_curl')]"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2020-12-01",
-            "name": "[concat(variables('vmName'),'/change_heap_size')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.OSTCExtensions",
-                "type": "CustomScriptForLinux",
-                "typeHandlerVersion": "1.4",
-                "settings": {
-                    "commandToExecute": "[concat('change_heap_size_vk_service ',variables('serviceName'),' ',variables('SolutionSize'),' && sudo rm -rf /bin/change_heap_size_vk_service')]"
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "protectedSettings": {
+                    "commandToExecute": "[concat('create_vk_user_curl ',parameters('adminVKDomain'),' ',parameters('adminVKUsername'),' ',parameters('adminVKPassword'),' ',parameters('vmName'),'; ', 'change_heap_size_vk_service ',variables('serviceName'),' ',variables('SolutionSize'),' ',parameters('vmName'),'; ','sudo rm -f /bin/create_vk_user_curl /bin/change_heap_size_vk_service')]"
                 }
             }
         }
