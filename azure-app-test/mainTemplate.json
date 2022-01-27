@@ -297,9 +297,14 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
             ],
+            "plan": {
+                "name": "planid1",
+                "product": "stc-diariztion-virtual-machine-ver1",
+                "publisher": "1601633765871"
+            },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('vmSizeMedium')]"
+                    "vmSize": "[parameters('vmSize')]"
                 },
                 "storageProfile": {
                     "osDisk": {
@@ -309,7 +314,10 @@
                         }
                     },
                     "imageReference": {
-                        "id": "/subscriptions/57b781bd-27d3-45ed-bea7-6e32c1d53f67/resourceGroups/packerGroup/providers/Microsoft.Compute/images/CentOS7VK4.5.13release"
+                        "publisher": "1601633765871",
+                        "offer": "stc-diariztion-virtual-machine-ver1",
+                        "sku": "planid1",
+                        "version": "4.5.13"
                     }
                 },
                 "networkProfile": {
